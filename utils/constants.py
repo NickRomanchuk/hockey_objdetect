@@ -1,0 +1,1 @@
+batch_size = 20 #how many frames to run YOLO predicition on at a time

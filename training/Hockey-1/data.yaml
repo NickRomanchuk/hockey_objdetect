@@ -1,0 +1,25 @@
+names:
+- Coach
+- Players
+- centerSpot
+- faceOffSpot
+- goal
+- goalPost
+- goalie
+- human
+- player
+- player_cheering
+- puck
+- redSpot
+- referee
+- scoreboard
+nc: 14
+roboflow:
+  license: CC BY 4.0
+  project: hockey-fwm0b
+  url: https://universe.roboflow.com/sportcontract/hockey-fwm0b/dataset/1
+  version: 1
+  workspace: sportcontract
+test: ../test/images
+train: Hockey-1/train/images
+val: Hockey-1/valid/images
