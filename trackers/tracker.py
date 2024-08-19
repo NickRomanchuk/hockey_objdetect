@@ -24,7 +24,6 @@ class Tracker:
                     position = get_center_of_bbox(bbox)
                     tracks[object][frame_num][track_id]['position'] = position
 
-
     def interpolate_puck_positions(self, puck_positions):
         puck_positions = [x.get(1, {}).get('bbox', []) for x in puck_positions]
         df_puck_positions = pd.DataFrame(puck_positions, columns=['x1','y1','x2','y2'])
@@ -55,7 +54,7 @@ class Tracker:
         # Takes array of frames, and returns array of YOLO object detections
         detections = self.detect_frames(frames)
 
-        tracks = {"players":[], "referees":[], "puck":[], "goalies":[]}
+        tracks = {"away-players":[], "home-players":[], "referees":[], "puck":[], "goalies":[]}
         for frame_num, detection in enumerate(detections):           
             cls_names_inv = {v:k for k,v in detection.names.items()}
 
@@ -63,7 +62,8 @@ class Tracker:
             detection_supervision = sv.Detections.from_ultralytics(detection)
             detection_with_tracks = self.tracker.update_with_detections(detection_supervision)
 
-            tracks["players"].append({})
+            tracks["home-players"].append({})
+            tracks["away-players"].append({})
             tracks["referees"].append({})
             tracks["puck"].append({})
             tracks["goalies"].append({})
@@ -73,10 +73,13 @@ class Tracker:
                 cls_id = frame_detection[3]
                 track_id = frame_detection[4]
 
-                if cls_id == cls_names_inv['player']:
-                    tracks["players"][frame_num][track_id] = {"bbox":bbox}
+                if cls_id == cls_names_inv['away-player']:
+                    tracks["away-players"][frame_num][track_id] = {"bbox":bbox}
                 
-                if cls_id == cls_names_inv['goalie']:
+                if cls_id == cls_names_inv['home-player']:
+                    tracks["home-players"][frame_num][track_id] = {"bbox":bbox}
+                
+                if cls_id == cls_names_inv['away-goalie'] or cls_id == cls_names_inv['home-goalie']:
                     tracks["goalies"][frame_num][track_id] = {"bbox":bbox}
 
                 if cls_id == cls_names_inv['referee']:
@@ -145,15 +148,21 @@ class Tracker:
         for frame_num, frame in enumerate(video_frames):
             frame = frame.copy()
 
-            player_dict = tracks["players"][frame_num]
+            hplayer_dict = tracks["home-players"][frame_num]
+            aplayer_dict = tracks["away-players"][frame_num]
             puck_dict = tracks["puck"][frame_num]
             referee_dict = tracks["referees"][frame_num]
             goalie_dict = tracks["goalies"][frame_num]
 
             # Draw Players
-            for track_id, player in player_dict.items():
+            for track_id, player in hplayer_dict.items():
                 color = player.get("team_color", (0,0,0))
-                frame = self.draw_ellipse(frame, player["bbox"], color)
+                frame = self.draw_ellipse(frame, player["bbox"], (255,0,0))
+
+            # Draw Players
+            for track_id, player in aplayer_dict.items():
+                color = player.get("team_color", (0,0,0))
+                frame = self.draw_ellipse(frame, player["bbox"], (0,0,255))
 
             # Draw Goalie
             for track_id, goalie in goalie_dict.items():

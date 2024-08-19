@@ -40,23 +40,23 @@ def main():
     # detections["puck"] = tracker.interpolate_puck_positions(detections["puck"])
     
     # Speed and distance estimator
-    speed_and_distance_estimator = SpeedDistanceEstimator()
-    speed_and_distance_estimator.add_speed_and_distance_to_tracks(detections)
+    #speed_and_distance_estimator = SpeedDistanceEstimator()
+    #speed_and_distance_estimator.add_speed_and_distance_to_tracks(detections)
 
     # Draw output
     output_video_frames = tracker.draw_annotations(video_frames, detections)
 
     # Draw Camera Movement
-    output_video_frames = camera_movement_esitmator.draw_camera_movement(output_video_frames, camera_movement_per_frame)
+    #output_video_frames = camera_movement_esitmator.draw_camera_movement(output_video_frames, camera_movement_per_frame)
 
     # Draw Speed and Distance
-    speed_and_distance_estimator.draw_speed_and_distance(output_video_frames, detections)
+    #speed_and_distance_estimator.draw_speed_and_distance(output_video_frames, detections)
 
     # Save each frame with bounding boxes
-    tracker.save_detections(video_frames, detections)
+    #tracker.save_detections(video_frames, detections)
 
     # Save each bounding box as a seperate image
-    tracker.save_bboximages(video_frames, detections)
+    #tracker.save_bboximages(video_frames, detections)
 
     # Save video
     save_video(output_video_frames, 'output_videos/output_video.avi')
